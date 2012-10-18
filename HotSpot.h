@@ -2,12 +2,14 @@
 #define HOTSPOT_H
 
 #include "ofMain.h"
+#include "IntensityDisplay.h"
 
 class HotSpot
 {
     public:
         HotSpot();
         HotSpot(int _x, int _y);
+        void setDisplay(IntensityDisplay *_display){mDisplay = _display;}
         void setBounds(int _x, int _y);
         void checkForActivity(unsigned char * _activityMap, int _width, int _height);
         void draw();
@@ -46,6 +48,8 @@ class HotSpot
         int outputValue;
         int outputDirection;
         float outputVelocity;
+
+        IntensityDisplay *mDisplay;
 
 };
 

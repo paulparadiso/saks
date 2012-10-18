@@ -50,6 +50,10 @@ void HotSpot::draw(){
     ofDisableAlphaBlending();
     ofSetColor(outputValue,outputValue,outputValue);
     ofRect(outputPos.x, outputPos.y, 20, 20);
+    ofNoFill();
+    ofSetColor(0,0,0);
+    ofRect(outputPos.x, outputPos.y, 20, 20);
+    ofFill();
     ofSetColor(255,255,255);
 }
 

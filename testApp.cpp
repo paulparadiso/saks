@@ -1,7 +1,10 @@
 #include "testApp.h"
+#include "ofxSimpleGuiToo.h"
+#include "CLEyeMulticam.h"
 
 //--------------------------------------------------------------
 void testApp::setup(){
+    cout << "Have " << CLEyeGetCameraCount() << " cameras." << endl;
     multiCam = new ofxCLEyeMulticam(0, CLEYE_MONO_PROCESSED, CLEYE_QVGA, 30);
     cTex.allocate(320,240,GL_LUMINANCE);
     movementTex.allocate(320, 240, GL_LUMINANCE);
@@ -14,6 +17,8 @@ void testApp::setup(){
     movementOverlayFrame = (unsigned char *)malloc(320 * 240 * 4);
     bSelecting = false;
     bBgCompare = false;
+    display = new IntensityDisplay(0, 240);
+    cameraThreshold = 20;
 }
 
 //--------------------------------------------------------------
@@ -42,7 +47,7 @@ void testApp::update(){
 
 //--------------------------------------------------------------
 void testApp::draw(){
-    ofBackground(0,0,255);
+    ofBackground(255,255,255);
     cTex.draw(0, 0);
     ofEnableAlphaBlending();
     movementOverlay.draw(0,0);
@@ -51,13 +56,14 @@ void testApp::draw(){
     for(hIter = hotSpots.begin(); hIter != hotSpots.end(); hIter++){
         (*hIter)->draw();
     }
+    //display->draw();
 }
 
 void testApp::makeMovementMap(unsigned char * _currentFrame, unsigned char * _previousFrame, unsigned char * _output, int _width, int _height)
 {
     for(int y = 0; y < _height; y++){
         for(int x = 0; x < _width; x++){
-            if(abs(_previousFrame[(y * _width) + x] - _currentFrame[(y * _width) + x]) > 20){
+            if(abs(_previousFrame[(y * _width) + x] - _currentFrame[(y * _width) + x]) > cameraThreshold){
                 _output[(y * _width) + x] = 255;
             } else {
                 _output[(y * _width) + x] = 0;
@@ -94,6 +100,20 @@ void testApp::keyPressed(int key){
     }
     if(key == 's'){
         bBgCompare = !bBgCompare;
+    }
+    if(key == OF_KEY_UP){
+        cameraThreshold++;
+        if(cameraThreshold > 255){
+            cameraThreshold = 255;
+        }
+        cout << "Threshold set to " << cameraThreshold << endl;
+    }
+    if(key == OF_KEY_DOWN){
+        cameraThreshold--;
+        if(cameraThreshold < 0){
+            cameraThreshold = 0;
+        }
+        cout << "Threshold set to " << cameraThreshold << endl;
     }
 }
 

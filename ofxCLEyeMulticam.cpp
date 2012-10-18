@@ -24,6 +24,17 @@ ofxCLEyeMulticam::~ofxCLEyeMulticam()
     //dtor
 }
 
+int ofxCLEyeMulticam::getCameraCount()
+{
+    int camCount =  CLEyeGetCameraCount();
+    return camCount;
+}
+
+GUID ofxCLEyeMulticam::getCameraUUID(int _camera)
+{
+    return CLEyeGetCameraUUID(_camera);
+}
+
 void ofxCLEyeMulticam::createCamera(GUID _guid, int _colorMode, int _resolution, int _framerate)
 {
     mGuid = _guid;

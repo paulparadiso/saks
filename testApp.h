@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxCLEyeMulticam.h"
 #include "HotSpot.h"
+#include "IntensityDisplay.h"
 
 class testApp : public ofBaseApp{
 
@@ -40,5 +41,9 @@ class testApp : public ofBaseApp{
         vector<HotSpot*> hotSpots;
 
         bool bBgCompare;
+
+        IntensityDisplay *display;
+
+        int cameraThreshold;
 
 };
