@@ -4,6 +4,11 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
+
+    motionCam = new MotionCam(0,0,0);
+    motionCam->start();
+
+    /*
     cout << "Have " << CLEyeGetCameraCount() << " cameras." << endl;
     multiCam = new ofxCLEyeMulticam(0, CLEYE_MONO_PROCESSED, CLEYE_QVGA, 30);
     cTex.allocate(320,240,GL_LUMINANCE);
@@ -19,10 +24,15 @@ void testApp::setup(){
     bBgCompare = false;
     display = new IntensityDisplay(0, 240);
     cameraThreshold = 20;
+    */
+    display = new IntensityDisplay(0, 240);
+    window.loadImage("single_window.png");
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
+    //motionCam->update();
+    /*
     multiCam->grabFrame();
     if(multiCam->isFrameNew())
     {
@@ -34,7 +44,7 @@ void testApp::update(){
             makeMovementMap(currentFrame, backgroundFrame, movementFrame, 320, 240);
         }
         makeMovementOverlay(movementFrame, movementOverlayFrame, 320, 240);
-        movementTex.loadData(movementFrame, 320, 240, GL_LUMINANCE);
+        //movementTex.loadData(movementFrame, 320, 240, GL_LUMINANCE);
         movementOverlay.loadData(movementOverlayFrame, 320, 240, GL_RGBA);
         memcpy(previousFrame, currentFrame, 320 * 240);
         vector<HotSpot*>::iterator hIter;
@@ -43,10 +53,13 @@ void testApp::update(){
             (*hIter)->update();
         }
     }
+    */
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
+    motionCam->draw();
+    /*
     ofBackground(255,255,255);
     cTex.draw(0, 0);
     ofEnableAlphaBlending();
@@ -56,8 +69,13 @@ void testApp::draw(){
     for(hIter = hotSpots.begin(); hIter != hotSpots.end(); hIter++){
         (*hIter)->draw();
     }
-    //display->draw();
+    */
+    window.draw(0,280);
+    display->draw();
+
 }
+
+/*
 
 void testApp::makeMovementMap(unsigned char * _currentFrame, unsigned char * _previousFrame, unsigned char * _output, int _width, int _height)
 {
@@ -93,14 +111,19 @@ void testApp::makeMovementOverlay(unsigned char * _movementFrame, unsigned char 
     }
 }
 
+*/
+
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
     if(key == 'b'){
-        memcpy(backgroundFrame, multiCam->getPixels(), 320 * 240);
+        //memcpy(backgroundFrame, multiCam->getPixels(), 320 * 240);
+        motionCam->captureBackground();
     }
     if(key == 's'){
-        bBgCompare = !bBgCompare;
+        //bBgCompare = !bBgCompare;
+        motionCam->toggleCompare();
     }
+    /*
     if(key == OF_KEY_UP){
         cameraThreshold++;
         if(cameraThreshold > 255){
@@ -115,6 +138,7 @@ void testApp::keyPressed(int key){
         }
         cout << "Threshold set to " << cameraThreshold << endl;
     }
+    */
 }
 
 //--------------------------------------------------------------
@@ -129,13 +153,17 @@ void testApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void testApp::mouseDragged(int x, int y, int button){
+    /*
     if(bSelecting){
         hotSpots.back()->setBounds(x, y);
     }
+    */
+    updateMouseState("drag", x, y, button);
 }
 
 //--------------------------------------------------------------
 void testApp::mousePressed(int x, int y, int button){
+    /*
     if(button == 0){
         if(!bSelecting){
             bSelecting = true;
@@ -153,16 +181,30 @@ void testApp::mousePressed(int x, int y, int button){
             }
         }
     }
+    */
+    updateMouseState("down", x, y, button);
 }
 
 //--------------------------------------------------------------
 void testApp::mouseReleased(int x, int y, int button){
+    /*
     if(button == 0){
         if(bSelecting){
             hotSpots.back()->setBounds(x, y);
             bSelecting = false;
         }
     }
+    */
+    updateMouseState("up", x, y, button);
+}
+
+void testApp::updateMouseState(const char * _state, int _x, int _y, int _button)
+{
+    attrs["mouseX"] = ofToString(_x);
+    attrs["mouseY"] = ofToString(_y);
+    attrs["mouseButton"] = ofToString(_button);
+    attrs["mouseState"] = _state;
+    SubObMediator::Instance()->update("mouse-changed", this);
 }
 
 //--------------------------------------------------------------

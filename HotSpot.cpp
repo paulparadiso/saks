@@ -37,6 +37,13 @@ void HotSpot::update(){
     if(outputValue > 255){
         outputValue = 255;
     }
+    //cout << "Intensity of " << number << " = " << outputValue << endl;
+    attrs.clear();
+    attrs["number"] = ofToString(number);
+    attrs["value"] = ofToString(outputValue);
+    //cout << "Set intensity attrs to " << attrs["number"] << " and " << attrs["value"] << endl;
+    SubObMediator::Instance()->update("intensity-updated", this);
+
 }
 
 void HotSpot::draw(){
@@ -48,12 +55,14 @@ void HotSpot::draw(){
     }
     ofRect(spotPos.x, spotPos.y, spotBounds.x - spotPos.x, spotBounds.y - spotPos.y);
     ofDisableAlphaBlending();
+    /*
     ofSetColor(outputValue,outputValue,outputValue);
     ofRect(outputPos.x, outputPos.y, 20, 20);
     ofNoFill();
     ofSetColor(0,0,0);
     ofRect(outputPos.x, outputPos.y, 20, 20);
     ofFill();
+    */
     ofSetColor(255,255,255);
 }
 

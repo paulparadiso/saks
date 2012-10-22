@@ -3,8 +3,10 @@
 
 #include "ofMain.h"
 #include "IntensityDisplay.h"
+#include "Subject.h"
+#include "SubObMediator.h"
 
-class HotSpot
+class HotSpot : public Subject
 {
     public:
         HotSpot();
@@ -15,6 +17,8 @@ class HotSpot
         void draw();
         bool isInside(int _x, int _y);
         void update();
+        void setNumber(int _num){number = _num;}
+        string getAttr(const char * _key){return attrs[_key];}
         virtual ~HotSpot();
     protected:
     private:
@@ -50,6 +54,14 @@ class HotSpot
         float outputVelocity;
 
         IntensityDisplay *mDisplay;
+
+        /*
+        Name of the camera that the hotspot is connected to.
+        */
+
+        string cameraName;
+        int number;
+        map<string, string> attrs;
 
 };
 

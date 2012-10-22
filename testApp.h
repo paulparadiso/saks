@@ -4,8 +4,11 @@
 #include "ofxCLEyeMulticam.h"
 #include "HotSpot.h"
 #include "IntensityDisplay.h"
+#include "MotionCam.h"
+#include "SubObMediator.h"
+#include "Subject.h"
 
-class testApp : public ofBaseApp{
+class testApp : public ofBaseApp, public Subject{
 
 	public:
 		void setup();
@@ -21,6 +24,21 @@ class testApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
+        MotionCam *motionCam;
+        MotionCam *motionCam2;
+        MotionCam *motionCam3;
+
+        map<string,string> attrs;
+        string getAttr(const char * _key){return attrs[_key];}
+
+        void updateMouseState(const char * _state, int _x, int _y, int _button);
+
+        IntensityDisplay *display;
+
+        ofImage window;
+
+		/*
 
 		void makeMovementMap(unsigned char * _currentFrame, unsigned char * _previousFrame, unsigned char * _output, int _width, int _height);
         void makeMovementOverlay(unsigned char * _movementFrame, unsigned char * _movementOverlay, int _width, int _height);
@@ -42,8 +60,9 @@ class testApp : public ofBaseApp{
 
         bool bBgCompare;
 
-        IntensityDisplay *display;
 
         int cameraThreshold;
+
+        */
 
 };
