@@ -5,18 +5,29 @@ HotSpot::HotSpot()
     //ctor
 }
 
-HotSpot::HotSpot(int _x, int _y)
+HotSpot::HotSpot(int _x, int _y, int _num)
 {
+    number = _num;
     spotPos.set(_x, _y);
     outputPos.set(_x, 250);
     outputValue = 0;
     outputDirection = -1;
     outputVelocity = 15.0;
+    gui = new ofxUICanvas(_x,250,45,40);
+    vector<string> names;
+    for(int i = number; i < number + 10; i++){
+        names.push_back(ofToString(i));
+    }
+    ddl = new ofxUIDropDownList("#", names, 30, -10, -10, OFX_UI_FONT_SMALL);
+    ddl->setAllowMultiple(false);
+    //ddl->
+    gui->addWidgetDown(ddl);
+    ofAddListener(gui->newGUIEvent, this, &HotSpot::guiEvent);
 }
 
 HotSpot::~HotSpot()
 {
-    //dtor
+    delete gui;
 }
 
 void HotSpot::setBounds(int _x, int _y)
@@ -39,6 +50,7 @@ void HotSpot::update(){
     }
     //cout << "Intensity of " << number << " = " << outputValue << endl;
     attrs.clear();
+    //cout << "hotspot name = " << ddl->getSelected()[0] << endl;
     attrs["number"] = ofToString(number);
     attrs["value"] = ofToString(outputValue);
     //cout << "Set intensity attrs to " << attrs["number"] << " and " << attrs["value"] << endl;
@@ -89,3 +101,30 @@ bool HotSpot::isInside(int _x, int _y)
         return false;
     }
 }
+
+void HotSpot::guiEvent(ofxUIEventArgs &e)
+{
+    string name = e.widget->getName();
+
+    vector<ofxUIWidget*> w = ddl->getSelected();
+    if(w.size() > 0){
+        //cout << "WIDGET NAME: " << ddl->getSelected()[0]->getName() << endl;
+        ddl->setName(w[0]->getName());
+    }
+
+    if(name == "FULLSCREEN")
+    {
+        ofxUIToggle *toggle = (ofxUIToggle *) e.widget;
+        ofSetFullscreen(toggle->getValue());
+    }
+    else if(name == "DYNAMIC DROP DOWN")
+    {
+        ofxUIDropDownList *ddlist = (ofxUIDropDownList *) e.widget;
+        vector<ofxUIWidget *> &selected = ddlist->getSelected();
+        for(int i = 0; i < selected.size(); i++)
+        {
+            cout << "SELECTED: " << selected[i]->getName() << endl;
+        }
+    }
+}
+

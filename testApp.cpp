@@ -5,8 +5,29 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 
+    cout << "Have " << ofxCLEyeMulticam::getCameraCount() << " cameras." << endl;
+
     motionCam = new MotionCam(0,0,0);
     motionCam->start();
+
+    /*
+
+    motionCam2 = new MotionCam(1,320,0);
+    motionCam2->start();
+
+    motionCam3 = new MotionCam(2,640,0);
+    motionCam3->start();
+
+    motionCam4 = new MotionCam(3,0,240);
+    motionCam4->start();
+
+    motionCam5 = new MotionCam(4,320,240);
+    motionCam5->start();
+
+    motionCam6 = new MotionCam(5,640,240);
+    motionCam6->start();
+
+    */
 
     /*
     cout << "Have " << CLEyeGetCameraCount() << " cameras." << endl;
@@ -58,7 +79,17 @@ void testApp::update(){
 
 //--------------------------------------------------------------
 void testApp::draw(){
+
     motionCam->draw();
+
+    /*
+    motionCam2->draw();
+    motionCam3->draw();
+    motionCam4->draw();
+    motionCam5->draw();
+    motionCam6->draw();
+    */
+
     /*
     ofBackground(255,255,255);
     cTex.draw(0, 0);
@@ -70,8 +101,8 @@ void testApp::draw(){
         (*hIter)->draw();
     }
     */
-    window.draw(0,280);
-    display->draw();
+    //window.draw(0,280);
+    //display->draw();
 
 }
 

@@ -91,6 +91,7 @@ class MotionCam : public Observer, public ofThread
         */
 
         string name;
+        int number;
 
         /*
         The threshold used by the camera for motion detection.

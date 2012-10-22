@@ -5,12 +5,13 @@
 #include "IntensityDisplay.h"
 #include "Subject.h"
 #include "SubObMediator.h"
+#include "ofxUI.h"
 
 class HotSpot : public Subject
 {
     public:
         HotSpot();
-        HotSpot(int _x, int _y);
+        HotSpot(int _x, int _y, int _num);
         void setDisplay(IntensityDisplay *_display){mDisplay = _display;}
         void setBounds(int _x, int _y);
         void checkForActivity(unsigned char * _activityMap, int _width, int _height);
@@ -19,6 +20,7 @@ class HotSpot : public Subject
         void update();
         void setNumber(int _num){number = _num;}
         string getAttr(const char * _key){return attrs[_key];}
+        void guiEvent(ofxUIEventArgs &e);
         virtual ~HotSpot();
     protected:
     private:
@@ -62,6 +64,14 @@ class HotSpot : public Subject
         string cameraName;
         int number;
         map<string, string> attrs;
+
+        /*
+        Drop down gui.
+        */
+
+        ofxUICanvas *gui;
+        ofxUIDropDownList *ddl;
+
 
 };
 

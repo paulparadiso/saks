@@ -2,6 +2,7 @@
 
 MotionCam::MotionCam()
 {
+    number = 0;
     multiCam = new ofxCLEyeMulticam(0, CLEYE_MONO_PROCESSED, CLEYE_QVGA, 30);
     pos.set(0,0);
     init();
@@ -9,14 +10,16 @@ MotionCam::MotionCam()
 
 MotionCam::MotionCam(int _camera)
 {
-    multiCam = new ofxCLEyeMulticam(_camera, CLEYE_MONO_PROCESSED, CLEYE_QVGA, 30);
+    number = _camera;
+    multiCam = new ofxCLEyeMulticam(number, CLEYE_MONO_PROCESSED, CLEYE_QVGA, 30);
     pos.set(0,0);
     init();
 }
 
 MotionCam::MotionCam(int _camera, int _x, int _y)
 {
-    multiCam = new ofxCLEyeMulticam(_camera, CLEYE_MONO_PROCESSED, CLEYE_QVGA, 30);
+    number = _camera;
+    multiCam = new ofxCLEyeMulticam(number, CLEYE_MONO_PROCESSED, CLEYE_QVGA, 30);
     pos.set(_x, _y);
     init();
 }
@@ -66,7 +69,6 @@ void MotionCam::update()
     multiCam->grabFrame();
     if(multiCam->isFrameNew())
     {
-        cTex.loadData(multiCam->getPixels(), 320, 240, GL_LUMINANCE);
         memcpy(currentFrame, multiCam->getPixels(), 320 * 240);
         if(!bBgCompare){
             makeMovementMap(currentFrame, previousFrame, movementFrame, 320, 240);
@@ -104,7 +106,7 @@ void MotionCam::processMouse(string _state, int _x, int _y, int _button)
             if(_button == 0){
                 if(!bSelecting){
                     bSelecting = true;
-                    hotSpots.push_back(new HotSpot(_x, _y));
+                    hotSpots.push_back(new HotSpot(_x, _y, number));
                     hotSpots.back()->setBounds(_x, _y);
                     }
                 }
@@ -112,6 +114,7 @@ void MotionCam::processMouse(string _state, int _x, int _y, int _button)
                     vector<HotSpot*>::iterator hIter;
                     for(hIter = hotSpots.begin(); hIter != hotSpots.end();){
                         if((*hIter)->isInside(_x, _y)){
+                            delete (*hIter);
                             hIter = hotSpots.erase(hIter);
                         } else {
                             ++hIter;
@@ -152,6 +155,7 @@ bool MotionCam::isInside(int _x, int _y)
 void MotionCam::draw()
 {
     if(bDrawCamera){
+        cTex.loadData(currentFrame, 320, 240, GL_LUMINANCE);
         cTex.draw(pos.x, pos.y);
         ofEnableAlphaBlending();
         movementOverlay.loadData(movementOverlayFrame, 320, 240, GL_RGBA);
