@@ -30,6 +30,7 @@ class MotionCam : public Observer, public ofThread
         void toggleCompare(){bBgCompare = !bBgCompare;}
         void setBgCompare(bool _bBg){bBgCompare = _bBg;}
         void setDrawCamera(bool _bDraw){bDrawCamera = _bDraw;}
+
     protected:
     private:
 
@@ -112,10 +113,23 @@ class MotionCam : public Observer, public ofThread
         bool bBgCompare;
 
         /*
+        Whether the initial background has been captured.
+        */
+
+        bool bBgCaptured;
+
+        /*
         Draw the camera output when true.
         */
 
         bool bDrawCamera;
+
+        /*
+        Pixel to change after background compare.  Slowly updates the
+        background image.
+        */
+
+        int changePixel;
 
         /*
         Hotspot gear.

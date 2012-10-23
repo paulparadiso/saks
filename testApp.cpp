@@ -9,6 +9,7 @@ void testApp::setup(){
 
     motionCam = new MotionCam(0,0,0);
     motionCam->start();
+    motionCam->setBgCompare(true);
 
     /*
 

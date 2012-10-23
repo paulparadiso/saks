@@ -40,8 +40,10 @@ void MotionCam::init()
     movementOverlayFrame = (unsigned char *)malloc(320 * 240 * 4);
     bBgCompare = false;
     bDrawCamera = true;
+    bBgCaptured = false;
     cameraThreshold = 20;
     SubObMediator::Instance()->addObserver("mouse-changed", this);
+    changePixel = 0;
 }
 
 void MotionCam::start()
@@ -70,10 +72,16 @@ void MotionCam::update()
     if(multiCam->isFrameNew())
     {
         memcpy(currentFrame, multiCam->getPixels(), 320 * 240);
+        if(bBgCaptured == false){
+            captureBackground();
+            bBgCaptured = true;
+        }
         if(!bBgCompare){
             makeMovementMap(currentFrame, previousFrame, movementFrame, 320, 240);
         } else {
             makeMovementMap(currentFrame, backgroundFrame, movementFrame, 320, 240);
+            backgroundFrame[changePixel] = currentFrame[changePixel];
+            changePixel = (changePixel + 1) % (320 * 240);
         }
         if(bDrawCamera) {
             makeMovementOverlay(movementFrame, movementOverlayFrame, 320, 240);
@@ -175,14 +183,20 @@ void MotionCam::captureBackground()
 
 void MotionCam::makeMovementMap(unsigned char * _currentFrame, unsigned char * _previousFrame, unsigned char * _output, int _width, int _height)
 {
+    int numChanged = 0;
     for(int y = 0; y < _height; y++){
         for(int x = 0; x < _width; x++){
             if(abs(_previousFrame[(y * _width) + x] - _currentFrame[(y * _width) + x]) > cameraThreshold){
                 _output[(y * _width) + x] = 255;
+                numChanged++;
             } else {
                 _output[(y * _width) + x] = 0;
             }
         }
+    }
+    if(numChanged > ((_width * _height) / 2)){
+        cout << "recapturing background" << endl;
+        captureBackground();
     }
 }
 
