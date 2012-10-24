@@ -1,9 +1,15 @@
 #include "ofxCLEyeMulticam.h"
 #include <stdio.h>
+#include "ofMain.h"
 
 ofxCLEyeMulticam::ofxCLEyeMulticam()
 {
-    createCamera(CLEyeGetCameraUUID(0), CLEYE_QVGA, CLEYE_COLOR_PROCESSED, 30);
+
+    //cout << "Trying to open - " << guid.Data1 << ":" << guid.Data2 << ":" << guid.Data3 << ":" << guid.Data4[0] << endl;;
+
+    //printf("Data4[0] = %02x\n", guid.Data4[0]);
+
+    //createCamera(0, CLEYE_QVGA, CLEYE_MONO_PROCESSED, 30);
     init();
 }
 
@@ -15,6 +21,12 @@ ofxCLEyeMulticam::ofxCLEyeMulticam(GUID _guid, int _colorMode, int _resolution, 
 
 ofxCLEyeMulticam::ofxCLEyeMulticam(int _camera, int _colorMode, int _resolution, int _framerate)
 {
+    GUID guid = CLEyeGetCameraUUID(_camera);
+    printf("Camera %d GUID: [%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x]\n",
+						_camera, guid.Data1, guid.Data2, guid.Data3,
+						guid.Data4[0], guid.Data4[1], guid.Data4[2],
+						guid.Data4[3], guid.Data4[4], guid.Data4[5],
+						guid.Data4[6], guid.Data4[7]);
     createCamera(CLEyeGetCameraUUID(_camera), _colorMode, _resolution, _framerate);
     init();
 }

@@ -4,7 +4,7 @@ IntensityOutput::IntensityOutput(int _x, int _y, int _number, bool _bDb)
 {
     pos.set(_x, _y);
     value = 255;
-    size.set(5,143);
+    size.set(10,10);
     number = _number;
     SubObMediator::Instance()->addObserver("intensity-updated", this);
     bDb = _bDb;
@@ -20,6 +20,7 @@ void IntensityOutput::draw(){
     //ofRect(pos.x, pos.y, 40,40);
     ofFill();
     ofSetColor(255,255,255);
+    ofDrawBitmapString(ofToString(number), pos.x + 11, pos.y + 33);
 }
 
 void IntensityOutput::update(string _subName, Subject *_sub)
@@ -35,11 +36,14 @@ void IntensityOutput::update(string _subName, Subject *_sub)
 
 IntensityDisplay::IntensityDisplay(int _x, int _y)
 {
-    /*
-    for(int i = 0; i < 8; i++){
-        outputs.push_back(new IntensityOutput(_x + 40 * i, _y, i, false));
+    int i;
+    for(i = 0; i < 30; i++){
+        outputs.push_back(new IntensityOutput(_x + 30 * i, _y, i, false));
     }
-    */
+    for(i = 0; i < 30; i++){
+        outputs.push_back(new IntensityOutput(_x + 30 * i, _y + 30, i + 30, false));
+    }
+    /*
     outputs.push_back(new IntensityOutput(1, 358, 0, false));
     outputs.push_back(new IntensityOutput(39, 358, 1, false));
     outputs.push_back(new IntensityOutput(53, 358, 2, false));
@@ -50,6 +54,7 @@ IntensityDisplay::IntensityDisplay(int _x, int _y)
     outputs.push_back(new IntensityOutput(190, 358, 5, false));
     outputs.push_back(new IntensityOutput(204, 358, 6, false));
     outputs.push_back(new IntensityOutput(295, 358, 7, false));
+    */
 }
 
 IntensityDisplay::~IntensityDisplay()

@@ -20,13 +20,84 @@ MotionCam::MotionCam(int _camera, int _x, int _y)
 {
     number = _camera;
     multiCam = new ofxCLEyeMulticam(number, CLEYE_MONO_PROCESSED, CLEYE_QVGA, 30);
+    //multiCam = new ofxCLEyeMulticam();
     pos.set(_x, _y);
     init();
+}
+
+MotionCam::MotionCam(string _UUID, int _x, int _y)
+{
+    //number = _camera;
+    //multiCam = new ofxCLEyeMulticam(number, CLEYE_MONO_PROCESSED, CLEYE_QVGA, 30);
+    name = _UUID;
+    setGUIDFromString(name);
+    multiCam = new ofxCLEyeMulticam(cGUID, CLEYE_MONO_PROCESSED, CLEYE_QVGA, 30);
+    pos.set(_x, _y);
+    init();
+    settingsFileName = name + ".xml";
+    settingsFile.setVerbose(true);
+
 }
 
 MotionCam::~MotionCam()
 {
     //dtor
+}
+
+void MotionCam::setGUIDFromString(string _guidString)
+{
+    vector<string>guids = ofSplitString(_guidString, ":");
+    stringstream ss;
+    ss << hex << guids[0];
+    ss >> cGUID.Data1;
+    ss.clear();
+    ss << hex << guids[1];
+    ss >> cGUID.Data2;
+    ss.clear();
+    ss << hex << guids[2];
+    ss >> cGUID.Data3;
+    ss.clear();
+    int feed = 0;
+    ss << hex << guids[3];
+    ss >> feed;
+    cGUID.Data4[0] = (unsigned char)feed;
+    feed = 0;
+    ss.clear();
+    ss << hex << guids[4];
+    ss >> feed;
+    cGUID.Data4[1] = (unsigned char)feed;
+    feed = 0;
+    ss.clear();
+    ss << hex << guids[5];
+    ss >> feed;
+    cGUID.Data4[2] = (unsigned char)feed;
+    feed = 0;
+    ss.clear();
+    ss << hex << guids[6];
+    ss >> feed;
+    cGUID.Data4[3] = (unsigned char)feed;
+    feed = 0;
+    ss.clear();
+    ss << hex << guids[7];
+    ss >> feed;
+    cGUID.Data4[4] = (unsigned char)feed;
+    feed = 0;
+    ss.clear();
+    ss << hex << guids[8];
+    ss >> feed;
+    cGUID.Data4[5] = (unsigned char)feed;
+    feed = 0;
+    ss.clear();
+    ss << hex << guids[9];
+    ss >> feed;
+    cGUID.Data4[6] = (unsigned char)feed;
+    feed = 0;
+    ss.clear();
+    ss << hex << guids[10];
+    ss >> feed;
+    cGUID.Data4[7] = (unsigned char)feed;
+    feed = 0;
+    ss.clear();
 }
 
 void MotionCam::init()
@@ -105,6 +176,16 @@ void MotionCam::update(string _subName, Subject *_sub)
         int button = ofToInt(_sub->getAttr("mouseButton"));
         processMouse(state, x, y, button);
     }
+}
+
+bool MotionCam::hasFocus(){
+    vector<HotSpot*>::iterator hIter;
+    for(hIter = hotSpots.begin(); hIter != hotSpots.end(); hIter++){
+        if((*hIter)->hasFocus()){
+            return true;
+        }
+    }
+    return false;
 }
 
 void MotionCam::processMouse(string _state, int _x, int _y, int _button)
@@ -220,3 +301,32 @@ void MotionCam::makeMovementOverlay(unsigned char * _movementFrame, unsigned cha
         }
     }
 }
+
+void MotionCam::saveSettings()
+{
+    if(!settingsFile.tagExists("hotspots")){
+        settingsFile.addTag("hotspots");
+    }
+    settingsFile.pushTag("hotspots");
+    settingsFile.clear();
+    int tagCounter = 0;
+    vector<HotSpot*>::iterator hIter;
+    for(hIter = hotSpots.begin(); hIter != hotSpots.end(); hIter++){
+        ofVec2f tPos = (*hIter)->getPos();
+        ofVec2f tBounds = (*hIter)->getBounds();
+        settingsFile.addTag("hotspot");
+        settingsFile.pushTag("hotspot", tagCounter++);
+        settingsFile.addTag("pos");
+        settingsFile.setValue("pos",ofToString(tPos.x) + ", " + ofToString(tPos.y));
+        settingsFile.addTag("bounds");
+        settingsFile.setValue("bounds",ofToString(tBounds.x) + ", " + ofToString(tBounds.y));
+        settingsFile.addTag("label");
+        settingsFile.setValue("label", (*hIter)->getNumber());
+        settingsFile.popTag();
+    }
+    settingsFile.popTag();
+    cout << "writing " << settingsFileName << endl;
+    settingsFile.saveFile(settingsFileName);
+
+}
+

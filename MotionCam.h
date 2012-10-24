@@ -6,6 +6,7 @@
 #include "HotSpot.h"
 #include "Observer.h"
 #include "SubObMediator.h"
+#include "ofxXmlSettings.h"
 
 class MotionCam : public Observer, public ofThread
 {
@@ -13,10 +14,13 @@ class MotionCam : public Observer, public ofThread
         MotionCam();
         MotionCam(int _camera);
         MotionCam(int _camera, int _x, int _y);
+        MotionCam(string _UUID, int _x, int _y);
         virtual ~MotionCam();
         void update();
         void update(string _subName, Subject *_sub);
         void draw();
+
+        bool hasFocus();
 
         /*
         Thread related functions.
@@ -30,6 +34,12 @@ class MotionCam : public Observer, public ofThread
         void toggleCompare(){bBgCompare = !bBgCompare;}
         void setBgCompare(bool _bBg){bBgCompare = _bBg;}
         void setDrawCamera(bool _bDraw){bDrawCamera = _bDraw;}
+
+        /*
+        Save hotspot data.
+        */
+
+        void saveSettings();
 
     protected:
     private:
@@ -45,6 +55,13 @@ class MotionCam : public Observer, public ofThread
         */
 
         void init();
+
+        /*
+        Make GUID from string.
+        */
+
+        void setGUIDFromString(string _uuidString);
+        GUID cGUID;
 
         /*
         Analyze a frame for movement.
@@ -137,6 +154,15 @@ class MotionCam : public Observer, public ofThread
 
         bool bSelecting;
         vector<HotSpot*> hotSpots;
+
+        /*
+        XML settings file for camera and hotspots.
+        */
+
+        ofxXmlSettings settingsFile;
+        string settingsFileName;
+
+
 };
 
 #endif // MOTIONCAM_H

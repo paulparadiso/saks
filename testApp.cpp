@@ -7,7 +7,9 @@ void testApp::setup(){
 
     cout << "Have " << ofxCLEyeMulticam::getCameraCount() << " cameras." << endl;
 
-    motionCam = new MotionCam(0,0,0);
+    camera1UUID = "4ca9d353:2010:3461:c3:60:f4:e6:9c:f3:93:87";
+
+    motionCam = new MotionCam(camera1UUID,0,0);
     motionCam->start();
     motionCam->setBgCompare(true);
 
@@ -47,8 +49,9 @@ void testApp::setup(){
     display = new IntensityDisplay(0, 240);
     cameraThreshold = 20;
     */
-    display = new IntensityDisplay(0, 240);
+    display = new IntensityDisplay(18, 660);
     window.loadImage("single_window.png");
+    //ofSetFullscreen(true);
 }
 
 //--------------------------------------------------------------
@@ -103,7 +106,8 @@ void testApp::draw(){
     }
     */
     //window.draw(0,280);
-    //display->draw();
+    //ofBackground(0,0,0);
+    display->draw();
 
 }
 
@@ -147,6 +151,10 @@ void testApp::makeMovementOverlay(unsigned char * _movementFrame, unsigned char 
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
+    if(motionCam->hasFocus()){
+        cout << "returning input." << endl;
+        return;
+    }
     if(key == 'b'){
         //memcpy(backgroundFrame, multiCam->getPixels(), 320 * 240);
         motionCam->captureBackground();
@@ -154,6 +162,9 @@ void testApp::keyPressed(int key){
     if(key == 's'){
         //bBgCompare = !bBgCompare;
         motionCam->toggleCompare();
+    }
+    if(key == 'i'){
+        motionCam->saveSettings();
     }
     /*
     if(key == OF_KEY_UP){

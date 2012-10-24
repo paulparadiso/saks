@@ -120,6 +120,9 @@ void HotSpot::guiEvent(ofxUIEventArgs &e)
             cout << "Text input = " << ti->getTextString() << endl;
             numberString = ti->getTextString();
         }
+        if(ti->getTriggerType() == OFX_UI_TEXTINPUT_ON_UNFOCUS){
+            cout << "text unfocused." << endl;
+        }
     }
 
     /*

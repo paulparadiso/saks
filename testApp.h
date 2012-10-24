@@ -32,6 +32,13 @@ class testApp : public ofBaseApp, public Subject{
         MotionCam *motionCam5;
         MotionCam *motionCam6;
 
+        string camera1UUID;
+        string camera2UUID;
+        string camera3UUID;
+        string camera4UUID;
+        string camera5UUID;
+        string camera6UUID;
+
         map<string,string> attrs;
         string getAttr(const char * _key){return attrs[_key];}
 

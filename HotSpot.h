@@ -14,6 +14,9 @@ class HotSpot : public Subject
         HotSpot(int _x, int _y, int _num);
         void setDisplay(IntensityDisplay *_display){mDisplay = _display;}
         void setBounds(int _x, int _y);
+        ofVec2f getPos(){return spotPos;}
+        ofVec2f getBounds(){return spotBounds;}
+        string getNumber(){return numberString;}
         void checkForActivity(unsigned char * _activityMap, int _width, int _height);
         void draw();
         bool isInside(int _x, int _y);
@@ -21,6 +24,7 @@ class HotSpot : public Subject
         void setNumber(int _num){number = _num;}
         string getAttr(const char * _key){return attrs[_key];}
         void guiEvent(ofxUIEventArgs &e);
+        bool hasFocus(){return gui->hasKeyboardFocus();}
         virtual ~HotSpot();
     protected:
     private:
@@ -63,6 +67,7 @@ class HotSpot : public Subject
 
         string cameraName;
         int number;
+        string numberString;
         map<string, string> attrs;
 
         /*
@@ -72,6 +77,12 @@ class HotSpot : public Subject
         ofxUICanvas *gui;
         ofxUIDropDownList *ddl;
 
+        /*
+        Text input widget.
+        */
+
+        ofxUITextInput *ti;
+        string tiName;
 
 };
 
