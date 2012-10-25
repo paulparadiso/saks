@@ -158,12 +158,12 @@ void MotionCam::update()
             backgroundFrame[changePixel] = currentFrame[changePixel];
             changePixel = (changePixel + 1) % (320 * 240);
             */
-            for(int y = changePixelX; y < changePixelX + 40; y++){
+            //for(int y = changePixelX; y < changePixelX + 40; y++){
                 for(int x = 0; x < 320; x++){
-                    backgroundFrame[(y * 320) + x] = currentFrame[(y * 320) + x];
+                    backgroundFrame[(changePixelX * 320) + x] = currentFrame[(changePixelX * 320) + x];
                 }
-            }
-            changePixelX = (changePixelX + 40) % 240;
+            //}
+            changePixelX = (changePixelX + 1) % 240;
         }
         if(bDrawCamera) {
             makeMovementOverlay(movementFrame, movementOverlayFrame, 320, 240);

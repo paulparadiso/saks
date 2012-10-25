@@ -15,6 +15,7 @@ void testApp::setup(){
     camera5UUID = "a491cf7a-b195-72e3-bf-1c-86-c1-04-91-a1-a8";
     camera6UUID = "4ca9d353-2010-3461-c3-60-f4-e6-9c-f3-93-87";
 
+    /*
     motionCams.push_back(new MotionCam(camera1UUID,0,0));
     motionCams.back()->start();
     motionCams.back()->setBgCompare(true);
@@ -38,6 +39,7 @@ void testApp::setup(){
     motionCams.push_back(new MotionCam(camera6UUID,640,284));
     motionCams.back()->start();
     motionCams.back()->setBgCompare(true);
+    */
 
 
     screenSaver = new ScreenSaver();
@@ -213,6 +215,12 @@ void testApp::keyPressed(int key){
         for(mIter = motionCams.begin(); mIter != motionCams.end(); mIter++){
             (*mIter)->toggleRunning();
         }
+    }
+    if(key == 'o'){
+        screenSaver->setWalkMode();
+    }
+    if(key == 'p'){
+        screenSaver->setPulseMode();
     }
     /*
     if(key == OF_KEY_UP){
