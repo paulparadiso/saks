@@ -19,7 +19,9 @@ class IntensityOutput : public Observer
         ofVec2f size;
         int value;
         int number;
+        string label;
         bool bDb;
+        bool bUpdating;
 };
 
 class IntensityDisplay

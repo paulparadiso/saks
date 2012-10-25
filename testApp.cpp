@@ -7,11 +7,40 @@ void testApp::setup(){
 
     cout << "Have " << ofxCLEyeMulticam::getCameraCount() << " cameras." << endl;
 
-    camera1UUID = "4ca9d353:2010:3461:c3:60:f4:e6:9c:f3:93:87";
+    //camera1UUID = "4ca9d353:2010:3461:c3:60:f4:e6:9c:f3:93:87";
+    camera1UUID = "f21df817-08cf-4410-22-57-27-d9-5c-ed-ac-95";
+    camera2UUID = "e10b2a34-78d0-ab70-88-3d-6e-71-2c-d7-b9-40";
+    camera3UUID = "7248e218-89af-e0c7-2a-3d-9e-92-ab-c7-07-34";
+    camera4UUID = "6b28e8a0-11ff-870a-ef-63-ff-07-c2-dd-ff-2b";
+    camera5UUID = "a491cf7a-b195-72e3-bf-1c-86-c1-04-91-a1-a8";
+    camera6UUID = "4ca9d353-2010-3461-c3-60-f4-e6-9c-f3-93-87";
 
-    motionCam = new MotionCam(camera1UUID,0,0);
-    motionCam->start();
-    motionCam->setBgCompare(true);
+    motionCams.push_back(new MotionCam(camera1UUID,0,0));
+    motionCams.back()->start();
+    motionCams.back()->setBgCompare(true);
+
+    motionCams.push_back(new MotionCam(camera2UUID,320,0));
+    motionCams.back()->start();
+    motionCams.back()->setBgCompare(true);
+
+    motionCams.push_back(new MotionCam(camera3UUID,640,0));
+    motionCams.back()->start();
+    motionCams.back()->setBgCompare(true);
+
+    motionCams.push_back(new MotionCam(camera4UUID,0,284));
+    motionCams.back()->start();
+    motionCams.back()->setBgCompare(true);
+
+    motionCams.push_back(new MotionCam(camera5UUID,320,284));
+    motionCams.back()->start();
+    motionCams.back()->setBgCompare(true);
+
+    motionCams.push_back(new MotionCam(camera6UUID,640,284));
+    motionCams.back()->start();
+    motionCams.back()->setBgCompare(true);
+
+
+    screenSaver = new ScreenSaver();
 
     /*
 
@@ -56,6 +85,7 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
+    screenSaver->update();
     //motionCam->update();
     /*
     multiCam->grabFrame();
@@ -84,7 +114,11 @@ void testApp::update(){
 //--------------------------------------------------------------
 void testApp::draw(){
 
-    motionCam->draw();
+    //motionCam->draw();
+    vector<MotionCam*>::iterator mIter;
+    for(mIter = motionCams.begin(); mIter != motionCams.end(); mIter++){
+        (*mIter)->draw();
+    }
 
     /*
     motionCam2->draw();
@@ -151,20 +185,34 @@ void testApp::makeMovementOverlay(unsigned char * _movementFrame, unsigned char 
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
-    if(motionCam->hasFocus()){
-        cout << "returning input." << endl;
-        return;
+    vector<MotionCam*>::iterator mIter;
+    for(mIter = motionCams.begin(); mIter != motionCams.end(); mIter++){
+        if((*mIter)->hasFocus()){
+            cout << "returning input." << endl;
+            return;
+        }
     }
+    /*
     if(key == 'b'){
         //memcpy(backgroundFrame, multiCam->getPixels(), 320 * 240);
         motionCam->captureBackground();
+
     }
+    */
     if(key == 's'){
         //bBgCompare = !bBgCompare;
-        motionCam->toggleCompare();
+        //motionCam->toggleCompare();
     }
     if(key == 'i'){
-        motionCam->saveSettings();
+        //motionCam->saveSettings();
+        for(mIter = motionCams.begin(); mIter != motionCams.end(); mIter++){
+            (*mIter)->saveSettings();
+        }
+    }
+    if(key == 'd'){
+        for(mIter = motionCams.begin(); mIter != motionCams.end(); mIter++){
+            (*mIter)->toggleRunning();
+        }
     }
     /*
     if(key == OF_KEY_UP){

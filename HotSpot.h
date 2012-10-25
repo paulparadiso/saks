@@ -12,12 +12,13 @@ class HotSpot : public Subject
     public:
         HotSpot();
         HotSpot(int _x, int _y, int _num);
+        HotSpot(int _x, int _y, int _bX, int _bY, string _label);
         void setDisplay(IntensityDisplay *_display){mDisplay = _display;}
         void setBounds(int _x, int _y);
         ofVec2f getPos(){return spotPos;}
         ofVec2f getBounds(){return spotBounds;}
         string getNumber(){return numberString;}
-        void checkForActivity(unsigned char * _activityMap, int _width, int _height);
+        void checkForActivity(unsigned char * _activityMap, int _width, int _height, int _offsetX, int _offsetY);
         void draw();
         bool isInside(int _x, int _y);
         void update();
@@ -25,6 +26,7 @@ class HotSpot : public Subject
         string getAttr(const char * _key){return attrs[_key];}
         void guiEvent(ofxUIEventArgs &e);
         bool hasFocus(){return gui->hasKeyboardFocus();}
+        void makeGui(int _y);
         virtual ~HotSpot();
     protected:
     private:
@@ -83,6 +85,12 @@ class HotSpot : public Subject
 
         ofxUITextInput *ti;
         string tiName;
+
+        /*
+        Prevent hotspot from sending out repeated data.
+        */
+
+        int previousValue;
 
 };
 

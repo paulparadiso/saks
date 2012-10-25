@@ -7,6 +7,7 @@
 #include "MotionCam.h"
 #include "SubObMediator.h"
 #include "Subject.h"
+#include "ScreenSaver.h"
 
 class testApp : public ofBaseApp, public Subject{
 
@@ -32,6 +33,8 @@ class testApp : public ofBaseApp, public Subject{
         MotionCam *motionCam5;
         MotionCam *motionCam6;
 
+        vector<MotionCam*>motionCams;
+
         string camera1UUID;
         string camera2UUID;
         string camera3UUID;
@@ -47,6 +50,8 @@ class testApp : public ofBaseApp, public Subject{
         IntensityDisplay *display;
 
         ofImage window;
+
+        ScreenSaver *screenSaver;
 
 		/*
 

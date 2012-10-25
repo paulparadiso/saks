@@ -8,15 +8,14 @@ HotSpot::HotSpot()
 HotSpot::HotSpot(int _x, int _y, int _num)
 {
     number = _num;
-    numberString = "#";
+    numberString = "0";
     spotPos.set(_x, _y);
     outputPos.set(_x, 250);
     outputValue = 0;
     outputDirection = -1;
     outputVelocity = 15.0;
-    gui = new ofxUICanvas(_x - 5,240,55,45);
-    gui->setDrawBack(false);
-    tiName = "0:10:0";
+    previousValue = 0;
+
     //vector<string> names;
     /*
     for(int i = number; i < number + 10; i++){
@@ -29,19 +28,41 @@ HotSpot::HotSpot(int _x, int _y, int _num)
     //ddl->
     //gui->addWidgetDown(ddl);
     //gui->addWidgetDown(ti);
-    gui->addTextInput(tiName, numberString, 40)->setAutoClear(false);
-    gui->setWidgetFontSize(OFX_UI_FONT_SMALL);
-    ofAddListener(gui->newGUIEvent, this, &HotSpot::guiEvent);
+    //gui = NULL;
+    //makeGui();
+}
+
+HotSpot::HotSpot(int _x, int _y, int _bX, int _bY, string _label){
+    numberString = _label;
+    spotPos.set(_x, _y);
+    spotBounds.set(_bX, _bY);
+    outputValue = 0;
+    outputDirection = -1;
+    outputVelocity = 15.0;
+    previousValue = 0;
 }
 
 HotSpot::~HotSpot()
 {
-    delete gui;
+    if(gui != NULL){
+        delete gui;
+    }
 }
 
 void HotSpot::setBounds(int _x, int _y)
 {
     spotBounds.set(_x, _y);
+    //gui->set
+}
+
+void HotSpot::makeGui(int _y)
+{
+    gui = new ofxUICanvas(spotPos.x - 5, 240 + _y,55,45);
+    gui->setDrawBack(false);
+    tiName = "0:10:0";
+    gui->addTextInput(tiName, numberString, 40)->setAutoClear(false);
+    gui->setWidgetFontSize(OFX_UI_FONT_SMALL);
+    ofAddListener(gui->newGUIEvent, this, &HotSpot::guiEvent);
 }
 
 void HotSpot::update(){
@@ -58,13 +79,16 @@ void HotSpot::update(){
         outputValue = 255;
     }
     //cout << "Intensity of " << number << " = " << outputValue << endl;
-    attrs.clear();
-    //cout << "hotspot name = " << ddl->getSelected()[0] << endl;
-    attrs["number"] = numberString;
-    attrs["value"] = ofToString(outputValue);
-    //cout << "Set intensity attrs to " << attrs["number"] << " and " << attrs["value"] << endl;
-    SubObMediator::Instance()->update("intensity-updated", this);
-
+    if(outputValue != previousValue){
+        //attrs.clear();
+        //cout << "hotspot name = " << ddl->getSelected()[0] << endl;
+        attrs["type"] = "real";
+        attrs["number"] = numberString;
+        attrs["value"] = ofToString(outputValue);
+        //cout << "Set intensity attrs to " << attrs["number"] << " and " << attrs["value"] << endl;
+        SubObMediator::Instance()->update("intensity-updated", this);
+        previousValue = outputValue;
+    }
 }
 
 void HotSpot::draw(){
@@ -87,12 +111,12 @@ void HotSpot::draw(){
     ofSetColor(255,255,255);
 }
 
-void HotSpot::checkForActivity(unsigned char * _activityMap, int _width, int _height)
+void HotSpot::checkForActivity(unsigned char * _activityMap, int _width, int _height, int _offsetX, int _offsetY)
 {
     for(int y = 0; y < _height; y++){
         for(int x = 0; x < _width; x++){
             if(_activityMap[(y * _width) + x] == 255){
-                if(isInside(x,y)){
+                if(isInside(x + _offsetX ,y + _offsetY)){
                     bHaveActivity = true;
                     return;
                 }
@@ -119,6 +143,7 @@ void HotSpot::guiEvent(ofxUIEventArgs &e)
         if(ti->getTriggerType() == OFX_UI_TEXTINPUT_ON_ENTER){
             cout << "Text input = " << ti->getTextString() << endl;
             numberString = ti->getTextString();
+            ti->unClick();
         }
     }
 

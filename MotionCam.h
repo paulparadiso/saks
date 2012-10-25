@@ -34,11 +34,14 @@ class MotionCam : public Observer, public ofThread
         void toggleCompare(){bBgCompare = !bBgCompare;}
         void setBgCompare(bool _bBg){bBgCompare = _bBg;}
         void setDrawCamera(bool _bDraw){bDrawCamera = _bDraw;}
+        void setRunning(bool _b){bRunning = _b;}
+        void toggleRunning(){bRunning = !bRunning;}
 
         /*
         Save hotspot data.
         */
 
+        void loadSettings();
         void saveSettings();
 
     protected:
@@ -146,7 +149,8 @@ class MotionCam : public Observer, public ofThread
         background image.
         */
 
-        int changePixel;
+        int changePixelX;
+        int changePixelY;
 
         /*
         Hotspot gear.
@@ -161,6 +165,14 @@ class MotionCam : public Observer, public ofThread
 
         ofxXmlSettings settingsFile;
         string settingsFileName;
+
+        /*
+        Utilities.
+        */
+
+        ofVec2f stringToVec2f(string _vec);
+
+        bool bRunning;
 
 
 };

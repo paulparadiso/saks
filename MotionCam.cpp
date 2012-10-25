@@ -36,7 +36,8 @@ MotionCam::MotionCam(string _UUID, int _x, int _y)
     init();
     settingsFileName = name + ".xml";
     settingsFile.setVerbose(true);
-
+    settingsFile.loadFile(settingsFileName);
+    loadSettings();
 }
 
 MotionCam::~MotionCam()
@@ -46,7 +47,7 @@ MotionCam::~MotionCam()
 
 void MotionCam::setGUIDFromString(string _guidString)
 {
-    vector<string>guids = ofSplitString(_guidString, ":");
+    vector<string>guids = ofSplitString(_guidString, "-");
     stringstream ss;
     ss << hex << guids[0];
     ss >> cGUID.Data1;
@@ -114,7 +115,9 @@ void MotionCam::init()
     bBgCaptured = false;
     cameraThreshold = 20;
     SubObMediator::Instance()->addObserver("mouse-changed", this);
-    changePixel = 0;
+    changePixelX = 0;
+    changePixelY = 0;
+    bRunning = false;
 }
 
 void MotionCam::start()
@@ -151,17 +154,27 @@ void MotionCam::update()
             makeMovementMap(currentFrame, previousFrame, movementFrame, 320, 240);
         } else {
             makeMovementMap(currentFrame, backgroundFrame, movementFrame, 320, 240);
+            /*
             backgroundFrame[changePixel] = currentFrame[changePixel];
             changePixel = (changePixel + 1) % (320 * 240);
+            */
+            for(int y = changePixelX; y < changePixelX + 40; y++){
+                for(int x = 0; x < 320; x++){
+                    backgroundFrame[(y * 320) + x] = currentFrame[(y * 320) + x];
+                }
+            }
+            changePixelX = (changePixelX + 40) % 240;
         }
         if(bDrawCamera) {
             makeMovementOverlay(movementFrame, movementOverlayFrame, 320, 240);
         }
         memcpy(previousFrame, currentFrame, 320 * 240);
-        vector<HotSpot*>::iterator hIter;
-        for(hIter = hotSpots.begin(); hIter != hotSpots.end(); hIter++){
-            (*hIter)->checkForActivity(movementFrame, 320, 240);
-            (*hIter)->update();
+        if(bRunning){
+            vector<HotSpot*>::iterator hIter;
+            for(hIter = hotSpots.begin(); hIter != hotSpots.end(); hIter++){
+                (*hIter)->checkForActivity(movementFrame, 320, 240, pos.x, pos.y);
+                (*hIter)->update();
+            }
         }
     }
 }
@@ -220,12 +233,15 @@ void MotionCam::processMouse(string _state, int _x, int _y, int _button)
             if(_button == 0){
                 if(bSelecting){
                     hotSpots.back()->setBounds(_x, _y);
+                    hotSpots.back()->makeGui(pos.y);
                     bSelecting = false;
+                    /*
                     int count = 0;
                     vector<HotSpot*>::iterator hIter;
                     for(hIter = hotSpots.begin(); hIter != hotSpots.end(); hIter++){
                         (*hIter)->setNumber(count++);
                     }
+                    */
                 }
             }
         }
@@ -264,21 +280,23 @@ void MotionCam::captureBackground()
 
 void MotionCam::makeMovementMap(unsigned char * _currentFrame, unsigned char * _previousFrame, unsigned char * _output, int _width, int _height)
 {
-    int numChanged = 0;
+    //int numChanged = 0;
     for(int y = 0; y < _height; y++){
         for(int x = 0; x < _width; x++){
             if(abs(_previousFrame[(y * _width) + x] - _currentFrame[(y * _width) + x]) > cameraThreshold){
                 _output[(y * _width) + x] = 255;
-                numChanged++;
+                //numChanged++;
             } else {
                 _output[(y * _width) + x] = 0;
             }
         }
     }
+    /*
     if(numChanged > ((_width * _height) / 2)){
         cout << "recapturing background" << endl;
         captureBackground();
     }
+    */
 }
 
 void MotionCam::makeMovementOverlay(unsigned char * _movementFrame, unsigned char * _movementOverlay, int _width, int _height)
@@ -302,13 +320,35 @@ void MotionCam::makeMovementOverlay(unsigned char * _movementFrame, unsigned cha
     }
 }
 
+void MotionCam::loadSettings()
+{
+    //cout << "loading hotspots." << endl;
+    if(settingsFile.tagExists("hotspots")){
+        settingsFile.pushTag("hotspots");
+        for(int i = 0; i < settingsFile.getNumTags("hotspot"); i++){
+            settingsFile.pushTag("hotspot", i);
+            ofVec2f tPos = stringToVec2f(settingsFile.getValue("pos", "0,0"));
+            ofVec2f tBounds = stringToVec2f(settingsFile.getValue("bounds", "0,0"));
+            //cout << "adding hotspot." << endl;
+            hotSpots.push_back(new HotSpot(tPos.x, tPos.y, tBounds.x, tBounds.y, settingsFile.getValue("label","0")));
+            hotSpots.back()->makeGui(pos.y);
+            settingsFile.popTag();
+        }
+        settingsFile.popTag();
+    }
+}
+
 void MotionCam::saveSettings()
 {
+    /*
     if(!settingsFile.tagExists("hotspots")){
         settingsFile.addTag("hotspots");
     }
-    settingsFile.pushTag("hotspots");
+    */
     settingsFile.clear();
+    settingsFile.addTag("hotspots");
+    settingsFile.pushTag("hotspots");
+    //settingsFile.clear();
     int tagCounter = 0;
     vector<HotSpot*>::iterator hIter;
     for(hIter = hotSpots.begin(); hIter != hotSpots.end(); hIter++){
@@ -328,5 +368,14 @@ void MotionCam::saveSettings()
     cout << "writing " << settingsFileName << endl;
     settingsFile.saveFile(settingsFileName);
 
+}
+
+ofVec2f MotionCam::stringToVec2f(string _vec){
+    ofVec2f v;
+    vector<string> tokens = ofSplitString(_vec, ",");
+    if(tokens.size() > 1){
+        v.set(ofToInt(tokens[0]), ofToInt(tokens[1]));
+    }
+    return v;
 }
 

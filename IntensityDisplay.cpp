@@ -5,9 +5,10 @@ IntensityOutput::IntensityOutput(int _x, int _y, int _number, bool _bDb)
     pos.set(_x, _y);
     value = 255;
     size.set(10,10);
-    number = _number;
+    label = ofToString(_number);
     SubObMediator::Instance()->addObserver("intensity-updated", this);
     bDb = _bDb;
+    bUpdating = false;
 }
 
 void IntensityOutput::draw(){
@@ -19,18 +20,25 @@ void IntensityOutput::draw(){
     ofRect(pos.x + 10, pos.y + 10, size.x, size.y);
     //ofRect(pos.x, pos.y, 40,40);
     ofFill();
+    ofSetColor(0,0,0);
+    ofDrawBitmapString(label, pos.x + 11, pos.y + 33);
     ofSetColor(255,255,255);
-    ofDrawBitmapString(ofToString(number), pos.x + 11, pos.y + 33);
 }
 
 void IntensityOutput::update(string _subName, Subject *_sub)
 {
-    if(_subName == "intensity-updated"){
-        int inNum = ofToInt(_sub->getAttr("number"));
-        if(inNum == number){
-            value = ofToInt(_sub->getAttr("value"));
-            //cout << "Recieved intensity input - " << inNum << ", " << inValue << endl;
+    if(!bUpdating){
+        bUpdating = true;
+        if(_subName == "intensity-updated"){
+            //cout << "have - " << _sub->getAttr("number") << endl;
+            //int inNum = ofToInt(_sub->getAttr("number"));
+            //int inNum = _sub->getIntVal();
+            if(label == _sub->getAttr("number")){
+                value = ofToInt(_sub->getAttr("value"));
+                //cout << "Recieved intensity input - " << inNum << ", " << inValue << endl;
+            }
         }
+        bUpdating = false;
     }
 }
 
