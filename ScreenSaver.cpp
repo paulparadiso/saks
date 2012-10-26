@@ -180,7 +180,7 @@ void ScreenSaver::update()
     }
     if(recordState == SCREENSAVER_STATE_WAITING){
         if(ofGetElapsedTimef() - timeOfLastEvent > SCREENSAVER_WAIT_TIME){
-            cout << "Screensaver on." << endl;
+            //cout << "Screensaver on." << endl;
             vector<Pulser*>::iterator pIter;
             for(pIter = pulsers.begin(); pIter != pulsers.end(); pIter ++){
                 (*pIter)->reset();
@@ -196,7 +196,7 @@ void ScreenSaver::update(string _subName, Subject *_sub)
         if(_sub->getAttr("type") == "real"){
             timeOfLastEvent = ofGetElapsedTimef();
             if(recordState == SCREENSAVER_STATE_ON){
-                cout << "Screensaver off." << endl;
+                //cout << "Screensaver off." << endl;
                 vector<Pulser*>::iterator pIter;
                 for(pIter = pulsers.begin(); pIter != pulsers.end(); pIter ++){
                     (*pIter)->reset();

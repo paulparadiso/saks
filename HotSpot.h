@@ -27,6 +27,8 @@ class HotSpot : public Subject
         void guiEvent(ofxUIEventArgs &e);
         bool hasFocus(){return gui->hasKeyboardFocus();}
         void makeGui(int _y);
+        int getWidth(){return abs(spotBounds.x - spotPos.x);}
+        int getHeight(){return abs(spotBounds.y - spotPos.y);}
         virtual ~HotSpot();
     protected:
     private:

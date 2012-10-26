@@ -16,6 +16,7 @@ void testApp::setup(){
     camera6UUID = "4ca9d353-2010-3461-c3-60-f4-e6-9c-f3-93-87";
 
     /*
+
     motionCams.push_back(new MotionCam(camera1UUID,0,0));
     motionCams.back()->start();
     motionCams.back()->setBgCompare(true);
@@ -39,6 +40,7 @@ void testApp::setup(){
     motionCams.push_back(new MotionCam(camera6UUID,640,284));
     motionCams.back()->start();
     motionCams.back()->setBgCompare(true);
+
     */
 
 
@@ -82,7 +84,7 @@ void testApp::setup(){
     */
     display = new IntensityDisplay(18, 660);
     window.loadImage("single_window.png");
-    //ofSetFullscreen(true);
+    ofSetFullscreen(true);
 }
 
 //--------------------------------------------------------------
@@ -221,6 +223,9 @@ void testApp::keyPressed(int key){
     }
     if(key == 'p'){
         screenSaver->setPulseMode();
+    }
+    if(key == 'f'){
+        ofToggleFullscreen();
     }
     /*
     if(key == OF_KEY_UP){

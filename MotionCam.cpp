@@ -113,11 +113,11 @@ void MotionCam::init()
     bBgCompare = false;
     bDrawCamera = true;
     bBgCaptured = false;
-    cameraThreshold = 20;
+    cameraThreshold = 15;
     SubObMediator::Instance()->addObserver("mouse-changed", this);
     changePixelX = 0;
     changePixelY = 0;
-    bRunning = false;
+    bRunning = true;
 }
 
 void MotionCam::start()
@@ -158,12 +158,12 @@ void MotionCam::update()
             backgroundFrame[changePixel] = currentFrame[changePixel];
             changePixel = (changePixel + 1) % (320 * 240);
             */
-            //for(int y = changePixelX; y < changePixelX + 40; y++){
+            for(int y = changePixelX; y < changePixelX + 10; y++){
                 for(int x = 0; x < 320; x++){
-                    backgroundFrame[(changePixelX * 320) + x] = currentFrame[(changePixelX * 320) + x];
+                    backgroundFrame[(y * 320) + x] = currentFrame[(y * 320) + x];
                 }
-            //}
-            changePixelX = (changePixelX + 1) % 240;
+            }
+            changePixelX = (changePixelX + 10) % 240;
         }
         if(bDrawCamera) {
             makeMovementOverlay(movementFrame, movementOverlayFrame, 320, 240);
@@ -209,7 +209,7 @@ void MotionCam::processMouse(string _state, int _x, int _y, int _button)
                 if(!bSelecting){
                     bSelecting = true;
                     hotSpots.push_back(new HotSpot(_x, _y, number));
-                    hotSpots.back()->setBounds(_x, _y);
+                    //hotSpots.back()->setBounds(_x, _y);
                     }
                 }
             if(_button == 2){
@@ -233,7 +233,11 @@ void MotionCam::processMouse(string _state, int _x, int _y, int _button)
             if(_button == 0){
                 if(bSelecting){
                     hotSpots.back()->setBounds(_x, _y);
-                    hotSpots.back()->makeGui(pos.y);
+                    if(hotSpots.back()->getWidth() < 10 || hotSpots.back()->getHeight() < 10){
+                        hotSpots.pop_back();
+                    } else {
+                        hotSpots.back()->makeGui(pos.y);
+                    }
                     bSelecting = false;
                     /*
                     int count = 0;

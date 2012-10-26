@@ -10,6 +10,7 @@ HotSpot::HotSpot(int _x, int _y, int _num)
     number = _num;
     numberString = "0";
     spotPos.set(_x, _y);
+    spotBounds.set(_x, _y);
     outputPos.set(_x, 250);
     outputValue = 0;
     outputDirection = -1;
@@ -28,7 +29,8 @@ HotSpot::HotSpot(int _x, int _y, int _num)
     //ddl->
     //gui->addWidgetDown(ddl);
     //gui->addWidgetDown(ti);
-    //gui = NULL;
+    gui = NULL;
+    bHaveActivity = false;
     //makeGui();
 }
 
@@ -40,6 +42,8 @@ HotSpot::HotSpot(int _x, int _y, int _bX, int _bY, string _label){
     outputDirection = -1;
     outputVelocity = 15.0;
     previousValue = 0;
+    gui = NULL;
+    bHaveActivity = false;
 }
 
 HotSpot::~HotSpot()
